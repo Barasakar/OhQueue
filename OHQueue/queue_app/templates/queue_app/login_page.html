@@ -9,7 +9,22 @@
 </head>
 <body>
     <!-- Page content here -->
-    <head> Welcome </head>
+    <div class="login-container">
+        <h1>WashUQueue Login</h1>
+        <form action="/login/" method="post">
+            <div class="user-credentials">
+                <label for="username">Username: </label>
+                <input type="text" id="username" name="username" required>
+                
+                <label for="password">Password: </label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div class="signup">
+            <a href="/signup/">Signup</a>
+        </div>
+    </div>
 
     <!-- Add JavaScript file here -->
 </body>
