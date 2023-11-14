@@ -73,11 +73,13 @@ WSGI_APPLICATION = "OHQueue.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'djongo',
+        'NAME': 'Queue',  # Name of my current MongoDB database
+        'CLIENT': {
+            'host': 'mongodb://localhost:27017'  # Default MongoDB URL
+        }
     }
 }
 
