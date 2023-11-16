@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>Signup Page</title>
     <!-- CSS file links here -->
 </head>
 <body>
     <!-- Page content here -->
-    <div class="login-container">
-        <h1>WashUQueue Login</h1>
-        <form action="/login/" method="post">
+    <div class="signup-container">
+        <h1>WashUQueue Sign up</h1>
+        <form action="/signup/" method="post">
             <div class="user-credentials">
                 <label for="username">Username: </label>
                 <input type="text" id="username" name="username" required>
@@ -19,10 +19,10 @@
                 <label for="password">Password: </label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit">Login</button>
+            <button type="submit">Sign up</button>
         </form>
-        <div class="signup">
-            <a href="{% url 'signup_page' %}">Signup</a>
+        <div class="login">
+            <a href="{% url 'login_page' %}">Back to Login Page</a>
         </div>
     </div>
 

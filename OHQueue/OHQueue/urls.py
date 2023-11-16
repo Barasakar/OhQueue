@@ -22,4 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("queue_app/", include("queue_app.urls")),
     path("", queue_views.renderLoginPage, name="login_page"), # this assigns the login page to the root link.
+    path("signup_page/", queue_views.renderSignupPage, name="signup_page"), # this assign the signup page
 ]
