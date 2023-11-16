@@ -12,6 +12,7 @@
     <div class="signup-container">
         <h1>WashUQueue Sign up</h1>
         <form action="/signup/" method="post">
+            {% csrf_token %}
             <div class="user-credentials">
                 <label for="username">Username: </label>
                 <input type="text" id="username" name="username" required>
@@ -20,6 +21,9 @@
                 <input type="password" id="password" name="password" required>
             </div>
             <button type="submit">Sign up</button>
+            {% if error %}
+                <p>{{ error }}</p>
+            {% endif %}
         </form>
         <div class="login">
             <a href="{% url 'login_page' %}">Back to Login Page</a>

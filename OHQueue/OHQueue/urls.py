@@ -19,8 +19,14 @@ from django.urls import path, include
 from queue_app import views as queue_views
 
 urlpatterns = [
+    #page links:
     path("admin/", admin.site.urls),
     path("queue_app/", include("queue_app.urls")),
-    path("", queue_views.renderLoginPage, name="login_page"), # this assigns the login page to the root link.
+    path("", queue_views.renderLoginPage, name="root_login_page"), # this assigns the login page to the root link.
     path("signup_page/", queue_views.renderSignupPage, name="signup_page"), # this assign the signup page
+    path("login_page/", queue_views.renderLoginPage, name="login_page"), # I am not sure if I can name it as login_page again.
+
+    #Function links:
+    path("signup/", queue_views.signup, name="signup_func"),
+    path("login/", queue_views.login_view, name="login_func"),
 ]
