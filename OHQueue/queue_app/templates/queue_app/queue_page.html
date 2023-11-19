@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queue</title>
+    {% load static %}
+    <!-- CSS file links here -->
+</head>
+<body>
+    <!-- Page content here -->
+    <div class="TA-list">
+        <!-- active TA's names will pop up here -->
+    </div>
+
+    <div class="join-queue-container">
+        <form action="/join_leave_queue/" method="post">
+            {% csrf_token %}
+            <label for="name">Name: </label>
+            <input type="text" id="student_name" name="student_name" required>
+
+            <label for="question">Question: </label>
+            <input type="text" id="question" name="question" required>
+
+            <label for="location">Location: </label>
+            <input type="location" id="location" name="location">
+
+            <button type="submit" name="action" value="join">Join Queue</button>
+            <button type="submit" name="action" value="leave">Leave Queue</button>
+        </form>
+    </div>
+
+    <div class="queue-container">
+        <!-- students who are queue will pop up here-->
+    </div>
+
+    <!-- Add JavaScript file here -->
+    <script src="{% static 'queue_app/socket.js' %}"></script>
+</body>
+</html>

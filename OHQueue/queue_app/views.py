@@ -11,6 +11,9 @@ def renderLoginPage(request):
 def renderSignupPage(request):
     return render(request, "queue_app/signup_page.html")
 
+def renderQueuePage(request):
+    return render(request, "queue_app/queue_page.html")
+
 #------------------ Functionality -----------------------#
 def signup(request):
     if request.method == 'POST':
@@ -35,7 +38,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             print("You are logged in!")
-            #TODO: Implement redirect()
+            return redirect("/queue_page/")
         else:
             return render(request, "queue_app/login_page.html", {'error': 'Invalid username or password'})
     return render(request, "queue_app/login_page.html")
