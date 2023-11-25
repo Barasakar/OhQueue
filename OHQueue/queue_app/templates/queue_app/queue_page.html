@@ -16,21 +16,24 @@
     </div>
 
     <div class="join-queue-container">
-        <form action="/join_leave_queue/" method="post">
+        <form method="post">
             {% csrf_token %}
-            <label for="name">Name: </label>
+            
+            <!-- Ensure the 'for' attribute of the label matches the 'id' of the input -->
+            <label for="student_name">Name: </label>
             <input type="text" id="student_name" name="student_name" required>
-
+    
             <label for="question">Question: </label>
             <input type="text" id="question" name="question" required>
-
+    
             <label for="location">Location: </label>
             <input type="location" id="location" name="location">
-
+    
             <button type="submit" name="action" value="join">Join Queue</button>
             <button type="submit" name="action" value="leave">Leave Queue</button>
         </form>
     </div>
+    
 
     <div class="queue-container">
         <!-- students who are queue will pop up here-->
