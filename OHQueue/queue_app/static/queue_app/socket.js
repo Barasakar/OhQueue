@@ -13,16 +13,27 @@ document.addEventListener('DOMContentLoaded', function() {
         var data = JSON.parse(e.data);
         
         if (data.action === 'join' && data.name === document.querySelector('#student_name').value) {
+            
             joinButton.disabled = true;
             joinButton.style.backgroundColor = 'grey';
             joinButton.style.cursor = 'not-allowed';
+            var queueContainer = document.querySelector('.queue-container');
+            var newDiv = document.createElement('div');
+            newDiv.id = 'queue-user-' + data.name;
+            newDiv.textContent = 'Name: ' + data.name + ', Question: ' + data.question + ', Location: ' + data.location;
+        
+            queueContainer.appendChild(newDiv);
         }
-        var queueContainer = document.querySelector('.queue-container');
-        var newDiv = document.createElement('div');
-        newDiv.textContent = 'Name: ' + data.name + ', Question: ' + data.question + ', Location: ' + data.location;
         
-        queueContainer.appendChild(newDiv);
-        
+        if (data.action === 'leave' && data.name === document.querySelector('#student_name').value) {
+            var userDiv = document.getElementById('queue-user-' + data.name);
+            if (userDiv) {
+                userDiv.remove();
+            }
+            joinButton.disabled = false;
+            joinButton.style.backgroundColor = ''; 
+            joinButton.style.cursor = '';
+        }
     };
 
     ws.onclose = function(e) {

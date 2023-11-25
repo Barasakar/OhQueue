@@ -8,20 +8,21 @@ class QueueConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        # Handle disconnection logic
-        pass
+        user = self.scope["user"]
+        if not user.is_anonymous and user.username in self.joined_users:
+            self.joined_users.remove(user.username)
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         action = text_data_json['action']
+        name = text_data_json['name']  # Define 'name' here so it's accessible in both blocks
 
-        if action == 'join':
-            name = text_data_json['name']
-            
+        # Join send back
+        if action == 'join':            
             if name not in self.joined_users:
                 self.joined_users.add(name)
-                question = text_data_json['question']
-                location = text_data_json['location']
+                question = text_data_json.get('question', '')
+                location = text_data_json.get('location', '')
 
                 response = {
                     'action': 'join',
@@ -29,6 +30,16 @@ class QueueConsumer(AsyncWebsocketConsumer):
                     'question': question,
                     'location': location
                 }
-
+        
                 # Send the response back to the client
                 await self.send(text_data=json.dumps(response))
+
+        # Leave send back
+        elif action == 'leave' and name in self.joined_users:
+            self.joined_users.remove(name)
+
+            response = {
+                'action': 'leave',
+                'name': name
+            }
+            await self.send(text_data=json.dumps(response))
