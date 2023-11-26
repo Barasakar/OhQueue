@@ -99,6 +99,7 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'queue_app.CustomUser' # point Django to use my new custom user model locating in models.py
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
