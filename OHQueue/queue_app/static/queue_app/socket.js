@@ -39,6 +39,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 joinButton.style.cursor = '';
             }
         }
+
+        if (data.action === 'update_ta_list') {
+            var taListContainer = document.querySelector('.TA-list');
+            taListContainer.innerHTML = ''; 
+        
+            // Add each TA to the list
+            data.tas.forEach(function(taUsername) {
+                var taElement = document.createElement('p');
+                taElement.textContent = taUsername;
+                taListContainer.appendChild(taElement);
+            });
+        }
     };
 
     ws.onclose = function(e) {
