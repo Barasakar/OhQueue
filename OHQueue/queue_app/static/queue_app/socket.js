@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Open a WebSocket connection
     var ws = new WebSocket('ws://' + window.location.host + '/ws/queue/');
     var joinButton = document.querySelector('.join-queue-container button[value="join"]');
-
+    var leaveButton = document.getElementById('leaveQueue'); // Get the leave button
 
     ws.onopen = function(e) {
         console.log('WebSocket connected');
@@ -39,6 +39,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 joinButton.style.cursor = '';
             }
         }
+        if (data.action === 'update_queue') {
+            console.log("Received updated queue:", data.queue);
+            updateQueue(data.queue);
+        }
+
+        if (data.action === 'initial_state') {
+            updateTaList(data.tas);
+            updateQueue(data.queue);
+        }
 
         if (data.action === 'update_ta_list') {
             var taListContainer = document.querySelector('.TA-list');
@@ -49,6 +58,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 var taElement = document.createElement('p');
                 taElement.textContent = taUsername;
                 taListContainer.appendChild(taElement);
+            });
+        }
+
+        function updateTaList(tas) {
+            var taListContainer = document.querySelector('.TA-list');
+            taListContainer.innerHTML = ''; 
+            tas.forEach(function(taUsername) {
+                var taElement = document.createElement('p');
+                taElement.textContent = taUsername;
+                taListContainer.appendChild(taElement);
+            });
+        }
+        
+        function updateQueue(queue) {
+            var queueContainer = document.querySelector('.queue-container');
+            queueContainer.innerHTML = '';
+            queue.forEach(function(queueItem) {
+                var newDiv = document.createElement('div');
+                newDiv.textContent = 'Name: ' + queueItem.name + ', Question: ' + queueItem.question + ', Location: ' + queueItem.location;
+                queueContainer.appendChild(newDiv);
             });
         }
     };
@@ -78,5 +107,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.error('Form not found');
+    }
+
+    if (leaveButton) {
+        leaveButton.addEventListener('click', function() {
+            var name = document.querySelector('#student_name').value; // Assuming the name is still needed for leave
+            ws.send(JSON.stringify({ action: 'leave', name: name }));
+        });
+    } else {
+        console.error('Leave button not found');
     }
 });

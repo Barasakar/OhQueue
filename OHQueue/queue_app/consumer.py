@@ -5,7 +5,12 @@ import json
 class QueueConsumer(AsyncWebsocketConsumer):
     online_tas = set()  # Set to keep track of online TAs
     joined_users = set()
+    user_queue = []    # this is for preserving all the current information.
     queue_group_name = 'queue_group'
+
+    async def queue_update(self, event):
+        message = event['message']
+        await self.send(text_data=json.dumps(message))
 
     async def connect(self):
         await self.channel_layer.group_add(self.queue_group_name, self.channel_name)
@@ -15,6 +20,7 @@ class QueueConsumer(AsyncWebsocketConsumer):
         if user.is_authenticated and user.role == 'TA':
             self.online_tas.add(user.username)  # Add TA to online TAs set
             await self.update_ta_list()
+        await self.send_current_state()
 
     async def disconnect(self, close_code):
         user = self.scope["user"]
@@ -44,7 +50,13 @@ class QueueConsumer(AsyncWebsocketConsumer):
             'tas': event['tas']
         }))
 
-
+    async def send_current_state(self):
+        print("Sending initial state, queue:", self.user_queue)
+        await self.send(text_data=json.dumps({
+        'action': 'initial_state',
+        'tas': list(self.online_tas),
+        'queue': self.user_queue
+    }))
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -58,13 +70,19 @@ class QueueConsumer(AsyncWebsocketConsumer):
                 question = text_data_json.get('question', '')
                 location = text_data_json.get('location', '')
 
+                self.user_queue.append({
+                'name': name,
+                'question': question,
+                'location': location
+                })
+
                 response = {
                     'action': 'join',
                     'name': name,
                     'question': question,
                     'location': location
                 }
-        
+                print("Updated user_queue after join:", self.user_queue)
                 # Send the response back to the client
                 await self.channel_layer.group_send(
                 self.queue_group_name,
@@ -82,10 +100,15 @@ class QueueConsumer(AsyncWebsocketConsumer):
                 'action': 'leave',
                 'name': name
             }
+            self.user_queue = [user for user in self.user_queue if user['name'] != name]
+            print("Updated user_queue after leave:", self.user_queue)
             await self.channel_layer.group_send(
                 self.queue_group_name,
                 {
-                    'type': 'queue_update',
-                    'message': response
+                    "type": "queue_update",
+                    "message": {
+                        "action": "update_queue",
+                        "queue": self.user_queue
+                    }
                 }
             )

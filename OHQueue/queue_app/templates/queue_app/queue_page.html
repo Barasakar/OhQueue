@@ -18,8 +18,6 @@
     <div class="join-queue-container">
         <form method="post">
             {% csrf_token %}
-            
-            <!-- Ensure the 'for' attribute of the label matches the 'id' of the input -->
             <label for="student_name">Name: </label>
             <input type="text" id="student_name" name="student_name" required>
     
@@ -30,8 +28,8 @@
             <input type="location" id="location" name="location">
     
             <button type="submit" name="action" value="join">Join Queue</button>
-            <button type="submit" name="action" value="leave">Leave Queue</button>
         </form>
+        <button id="leaveQueue" name="action" value="leave">Leave Queue</button>
     </div>
     
 
