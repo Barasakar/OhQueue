@@ -39,7 +39,7 @@ class QueueConsumer(AsyncWebsocketConsumer):
         #     self.joined_users.remove(user.username)
 
         if user.is_authenticated and user.role == 'TA':
-            self.online_tas.remove(user.username)  # Remove TA from online TAs set
+            self.online_tas.remove(user.username) 
             await self.update_ta_list()
 
     async def update_ta_list(self):
@@ -60,16 +60,18 @@ class QueueConsumer(AsyncWebsocketConsumer):
         }))
 
     @sync_to_async
-    def save_queue_entry(self, name, question, location):
-        # Import the model inside the method
+    def save_queue_entry(self, name, question, location):   
         from .models import QueueEntry
-        QueueEntry.objects.create(name=name, question=question, location=location)
+        queue_entry, created = QueueEntry.objects.get_or_create(name=name)
+        queue_entry.question = question
+        queue_entry.location = location
+        queue_entry.in_queue = True  # Mark the user as in the queue
+        queue_entry.save()
 
     @sync_to_async
     def remove_queue_entry(self, name):
-        # Import the model inside the method
         from .models import QueueEntry
-        QueueEntry.objects.filter(name=name).delete()
+        QueueEntry.objects.filter(name=name).update(in_queue=False)
 
     @sync_to_async
     def get_all_queue_entries(self):
@@ -80,8 +82,11 @@ class QueueConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def is_user_in_queue(self, name):
         from .models import QueueEntry
-        # return QueueEntry.objects.filter(name=name, in_queue=True).exists()
-        QueueEntry.objects.filter(name=name).exists()
+        try:
+            queue_entry = QueueEntry.objects.get(name=name)
+            return queue_entry.in_queue
+        except QueueEntry.DoesNotExist:
+            return False
 
     async def send_current_state(self):
         queue_entries = await self.get_all_queue_entries()
@@ -94,18 +99,16 @@ class QueueConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         action = text_data_json['action']
-        name = text_data_json['name']
+        name = self.scope["user"].username
 
         if action == 'join':
             if name not in self.online_tas:
                 question = text_data_json.get('question', '')
                 location = text_data_json.get('location', '')
                 await self.save_queue_entry(name, question, location)
-
         elif action == 'leave':
             await self.remove_queue_entry(name)
 
-        # After join or leave, get the updated queue and send it to all clients
         queue_entries = await self.get_all_queue_entries()
         await self.channel_layer.group_send(
             self.queue_group_name,

@@ -10,7 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
     ws.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var currentUser = document.querySelector('#student_name').value;
-
+        if (data.action === 'user_status') {
+            console.log("User status received:", data.in_queue);
+            joinButton.disabled = data.in_queue;
+            joinButton.style.backgroundColor = data.in_queue ? 'grey' : '';
+            joinButton.style.cursor = data.in_queue ? 'not-allowed' : '';
+        }
         if (data.action === 'join' && data.name === currentUser) {
             joinButton.disabled = true;
             joinButton.style.backgroundColor = 'grey';
@@ -43,16 +48,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if (form) {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            var name = document.querySelector('#student_name').value;
+            var name = username;  
             var question = document.querySelector('#question').value;
             var location = document.querySelector('#location').value;
+    
+            joinButton.disabled = true;
+            joinButton.style.backgroundColor = 'grey';
+            joinButton.style.cursor = 'not-allowed';
+    
             ws.send(JSON.stringify({ action: 'join', name: name, question: question, location: location }));
         });
     }
 
     if (leaveButton) {
         leaveButton.addEventListener('click', function() {
-            var name = document.querySelector('#student_name').value;
+            var name = username;
+            joinButton.disabled = false;
+            joinButton.style.backgroundColor = '';
+            joinButton.style.cursor = '';
+    
             ws.send(JSON.stringify({ action: 'leave', name: name }));
         });
     }
@@ -61,17 +75,19 @@ document.addEventListener('DOMContentLoaded', function() {
         var queueContainer = document.querySelector('.queue-container');
         queueContainer.innerHTML = '';
     
-        if (queue && Array.isArray(queue)) { // Check if queue is defined and is an array
+        if (queue && Array.isArray(queue)) {
             queue.forEach(function(queueItem) {
-                var newDiv = document.createElement('div');
-                newDiv.id = 'queue-user-' + queueItem.name;
-                newDiv.textContent = 'Name: ' + queueItem.name + ', Question: ' + queueItem.question + ', Location: ' + queueItem.location;
-                queueContainer.appendChild(newDiv);
+                if (queueItem.in_queue) { 
+                    var newDiv = document.createElement('div');
+                    newDiv.id = 'queue-user-' + queueItem.name;
+                    newDiv.textContent = 'Name: ' + queueItem.name + ', Question: ' + queueItem.question + ', Location: ' + queueItem.location;
+                    queueContainer.appendChild(newDiv);
     
-                if (queueItem.name === currentUser) {
-                    joinButton.disabled = true;
-                    joinButton.style.backgroundColor = 'grey';
-                    joinButton.style.cursor = 'not-allowed';
+                    if (queueItem.name === currentUser) {
+                        joinButton.disabled = true;
+                        joinButton.style.backgroundColor = 'grey';
+                        joinButton.style.cursor = 'not-allowed';
+                    }
                 }
             });
         } else {

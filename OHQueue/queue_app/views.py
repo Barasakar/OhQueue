@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model, login, authenticate
+from django.contrib.auth.decorators import login_required
 
 User = get_user_model()
 
@@ -29,6 +30,12 @@ def signup(request):
         except Exception as e:
             return render(request, "queue_app/signup_page.html", {'error': str(e)})
     return render(request, "queue_app/signup_page.html")
+
+def queue_page_getuser(request):
+    context = {
+        'username': request.user.username
+    }
+    return render(request, "queue_app/queue_page.html", context)
 
 def login_view(request):
     if request.method == 'POST':
