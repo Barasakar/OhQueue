@@ -33,7 +33,8 @@ def signup(request):
 
 def queue_page_getuser(request):
     context = {
-        'username': request.user.username
+        'username': request.user.username,
+        'is_ta': request.user.role == 'TA',
     }
     return render(request, "queue_app/queue_page.html", context)
 

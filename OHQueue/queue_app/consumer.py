@@ -10,6 +10,10 @@ class QueueConsumer(AsyncWebsocketConsumer):
     async def queue_update(self, event):
         await self.send(text_data=json.dumps(event['message']))
 
+    async def send_message(self, event):
+        message = event['message']
+        await self.send(text_data=json.dumps(message))
+
     async def connect(self):
         await self.channel_layer.group_add(self.queue_group_name, self.channel_name)
         await self.accept()
@@ -65,7 +69,7 @@ class QueueConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def remove_queue_entry(self, name):
         from .models import QueueEntry
-        QueueEntry.objects.filter(name=name).update(in_queue=False)
+        QueueEntry.objects.filter(name=name).update(in_queue=False, assisting_ta=None)
 
     @sync_to_async
     def get_all_queue_entries(self):
@@ -79,7 +83,8 @@ class QueueConsumer(AsyncWebsocketConsumer):
                 "question": entry.question,
                 "location": entry.location,
                 "in_queue": entry.in_queue,
-                "creation_date": timezone.localtime(entry.creation_date).isoformat()  # Convert datetime to string
+                "creation_date": timezone.localtime(entry.creation_date).isoformat(),  # Convert datetime to string
+                "assisting_ta": entry.assisting_ta
             })
         return queue_entries
     
@@ -91,6 +96,27 @@ class QueueConsumer(AsyncWebsocketConsumer):
             return queue_entry.in_queue
         except QueueEntry.DoesNotExist:
             return False
+
+    
+    async def answer_queue_item(self, student_username, ta_username):
+        await sync_to_async(self._update_queue_entry_assistance)(student_username, ta_username)
+        message = {
+            'action': 'answer',
+            'studentUsername': student_username,
+            'taUsername': ta_username
+        }
+
+        await self.channel_layer.group_send(
+            self.queue_group_name,
+            {
+                'type': 'send_message',
+                'message': message
+            }
+        )
+
+    def _update_queue_entry_assistance(self, student_username, ta_username):
+        from .models import QueueEntry
+        QueueEntry.objects.filter(username=student_username).update(assisting_ta=ta_username)
 
     async def send_current_state(self):
         queue_entries = await self.get_all_queue_entries()
@@ -112,6 +138,12 @@ class QueueConsumer(AsyncWebsocketConsumer):
                 await self.save_queue_entry(username, username, question, location)
         elif action == 'leave':
             await self.remove_queue_entry(username)
+        
+        if action == 'answer':
+        # Handle the answer action
+            student_username = text_data_json['studentUsername']
+            await self.answer_queue_item(student_username, username)
+
 
         queue_entries = await self.get_all_queue_entries()
         await self.channel_layer.group_send(

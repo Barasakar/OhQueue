@@ -25,10 +25,10 @@ urlpatterns = [
     path("", queue_views.renderLoginPage, name="root_login_page"), # this assigns the login page to the root link.
     path("signup_page/", queue_views.renderSignupPage, name="signup_page"), # this assign the signup page
     path("login_page/", queue_views.renderLoginPage, name="login_page"), # I am not sure if I can name it as login_page again.
-    path("queue_page/", queue_views.renderQueuePage, name="queue_page"),
 
     #Function links:
     path("signup/", queue_views.signup, name="signup_func"),
     path("login/", queue_views.login_view, name="login_func"),
+    path("queue_page/", queue_views.queue_page_getuser, name="queue_page"),
     # path("join_leave_queue/", queue_views.join_leave_queue, name="join_leave_queue_func"),
 ]

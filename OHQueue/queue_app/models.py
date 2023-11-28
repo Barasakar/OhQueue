@@ -15,6 +15,7 @@ class QueueEntry(djongo_models.Model):
     in_queue = models.BooleanField(default=True)
     username = models.CharField(max_length=150, null=True) 
     creation_date = models.DateTimeField(default=timezone.now)
+    assisting_ta = models.CharField(max_length=150, null=True)
 
     def __str__(self):
         return self.name

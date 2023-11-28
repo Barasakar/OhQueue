@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
             joinButton.style.backgroundColor = data.in_queue ? 'grey' : '';
             joinButton.style.cursor = data.in_queue ? 'not-allowed' : '';
         }
+        if (data.action === 'answer') {
+            displayAssistance(data.studentUsername, data.taUsername);
+        }
     };
 
     ws.onclose = function(e) {
@@ -74,24 +77,41 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateQueue(queue, currentUser) {
         var queueContainer = document.querySelector('.queue-container');
         queueContainer.innerHTML = '';
-    
-        if (queue && Array.isArray(queue)) {
-            queue.forEach(function(queueItem) {
-                if (queueItem.in_queue) { 
-                    var newDiv = document.createElement('div');
-                    newDiv.id = 'queue-user-' + queueItem.name;
-                    newDiv.textContent = 'Name: ' + queueItem.name + ', Question: ' + queueItem.question + ', Location: ' + queueItem.location;
-                    queueContainer.appendChild(newDiv);
-    
-                    if (queueItem.name === currentUser) {
-                        joinButton.disabled = true;
-                        joinButton.style.backgroundColor = 'grey';
-                        joinButton.style.cursor = 'not-allowed';
-                    }
+        
+        queue.forEach(function(queueItem) {
+            if (queueItem.in_queue) {
+                var newDiv = document.createElement('div');
+                newDiv.id = 'queue-user-' + queueItem.name;
+                newDiv.innerHTML = 'Name: ' + queueItem.name + ', Question: ' + queueItem.question + ', Location: ' + queueItem.location;
+
+                if (queueItem.assisting_ta) {
+                    var assistanceInfo = document.createElement('p');
+                    assistanceInfo.textContent = 'You are currently assisted by ' + queueItem.assisting_ta;
+                    newDiv.appendChild(assistanceInfo);
                 }
-            });
-        } else {
-            console.error("Queue data is undefined or not an array");
+                if (isTA && !queueItem.assisting_ta) {  // Don't show the button if already assisted
+                    var answerButton = document.createElement('button');
+                    answerButton.textContent = 'Answer';
+                    answerButton.onclick = function() { answerQueueItem(queueItem.username); };
+                    newDiv.appendChild(answerButton);
+                }
+        
+                queueContainer.appendChild(newDiv);
+            }
+        });
+    }
+    
+
+    function answerQueueItem(username) {
+        ws.send(JSON.stringify({ action: 'answer', studentUsername: username }));
+    }
+
+    function displayAssistance(studentUsername, taUsername) {
+        var studentDiv = document.getElementById('queue-user-' + studentUsername);
+        console.log("studentDiv: ", studentDiv);
+        if (studentDiv) {
+            var assistanceInfo = 'You are currently assisted by ' + taUsername;
+            studentDiv.innerHTML += '<p>' + assistanceInfo + '</p>';
         }
     }
 
