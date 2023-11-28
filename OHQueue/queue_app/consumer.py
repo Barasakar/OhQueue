@@ -118,6 +118,8 @@ class QueueConsumer(AsyncWebsocketConsumer):
         from .models import QueueEntry
         QueueEntry.objects.filter(username=student_username).update(assisting_ta=ta_username)
 
+
+
     async def send_current_state(self):
         queue_entries = await self.get_all_queue_entries()
         await self.send(text_data=json.dumps({
@@ -144,6 +146,9 @@ class QueueConsumer(AsyncWebsocketConsumer):
             student_username = text_data_json['studentUsername']
             await self.answer_queue_item(student_username, username)
 
+        if action == 'delete':
+            student_username = text_data_json['studentUsername']
+            await self.remove_queue_entry(student_username)
 
         queue_entries = await self.get_all_queue_entries()
         await self.channel_layer.group_send(

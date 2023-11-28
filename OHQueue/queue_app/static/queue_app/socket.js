@@ -89,11 +89,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     assistanceInfo.textContent = 'You are currently assisted by ' + queueItem.assisting_ta;
                     newDiv.appendChild(assistanceInfo);
                 }
-                if (isTA && !queueItem.assisting_ta) {  // Don't show the button if already assisted
-                    var answerButton = document.createElement('button');
-                    answerButton.textContent = 'Answer';
-                    answerButton.onclick = function() { answerQueueItem(queueItem.username); };
-                    newDiv.appendChild(answerButton);
+                if (isTA) {  // Don't show the button if already assisted
+                    if (!queueItem.assisting_ta) {
+                        var answerButton = document.createElement('button');
+                        answerButton.textContent = 'Answer';
+                        answerButton.onclick = function() { answerQueueItem(queueItem.username); };
+                        newDiv.appendChild(answerButton);
+                    }
+                    var deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.onclick = function() { deleteQueueItem(queueItem.username); };
+                    newDiv.appendChild(deleteButton);
                 }
         
                 queueContainer.appendChild(newDiv);
@@ -104,6 +110,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function answerQueueItem(username) {
         ws.send(JSON.stringify({ action: 'answer', studentUsername: username }));
+    }
+
+    function deleteQueueItem(username) {
+        ws.send(JSON.stringify({ action: 'delete', studentUsername: username }));
     }
 
     function displayAssistance(studentUsername, taUsername) {
