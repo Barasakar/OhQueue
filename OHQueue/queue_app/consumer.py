@@ -1,10 +1,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 import json
-
-from channels.generic.websocket import AsyncWebsocketConsumer
-from asgiref.sync import sync_to_async
-import json
+from django.utils import timezone
 
 class QueueConsumer(AsyncWebsocketConsumer):
     online_tas = set()  # Set to keep track of online TAs
@@ -60,13 +57,10 @@ class QueueConsumer(AsyncWebsocketConsumer):
         }))
 
     @sync_to_async
-    def save_queue_entry(self, name, question, location):   
+    def save_queue_entry(self, username, name, question, location):
         from .models import QueueEntry
-        queue_entry, created = QueueEntry.objects.get_or_create(name=name)
-        queue_entry.question = question
-        queue_entry.location = location
-        queue_entry.in_queue = True  # Mark the user as in the queue
-        queue_entry.save()
+        QueueEntry.objects.filter(username=username).delete()
+        QueueEntry.objects.create(username=username, name=name, question=question, location=location, in_queue=True)
 
     @sync_to_async
     def remove_queue_entry(self, name):
@@ -75,9 +69,19 @@ class QueueConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def get_all_queue_entries(self):
-        # Import the model inside the method
         from .models import QueueEntry
-        return list(QueueEntry.objects.values())
+        entries = QueueEntry.objects.all()
+        queue_entries = []
+        for entry in entries:
+            queue_entries.append({
+                "username": entry.username,
+                "name": entry.name,
+                "question": entry.question,
+                "location": entry.location,
+                "in_queue": entry.in_queue,
+                "creation_date": timezone.localtime(entry.creation_date).isoformat()  # Convert datetime to string
+            })
+        return queue_entries
     
     @sync_to_async
     def is_user_in_queue(self, name):
@@ -99,15 +103,15 @@ class QueueConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         action = text_data_json['action']
-        name = self.scope["user"].username
+        username = self.scope["user"].username
 
         if action == 'join':
-            if name not in self.online_tas:
+            if username not in self.online_tas:
                 question = text_data_json.get('question', '')
                 location = text_data_json.get('location', '')
-                await self.save_queue_entry(name, question, location)
+                await self.save_queue_entry(username, username, question, location)
         elif action == 'leave':
-            await self.remove_queue_entry(name)
+            await self.remove_queue_entry(username)
 
         queue_entries = await self.get_all_queue_entries()
         await self.channel_layer.group_send(
@@ -120,3 +124,4 @@ class QueueConsumer(AsyncWebsocketConsumer):
                 }
             }
         )
+
