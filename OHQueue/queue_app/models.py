@@ -7,6 +7,7 @@ from django.utils import timezone
 
 class CustomUser(AbstractUser):
     role = models.CharField(max_length=100, choices=[('TA', 'Teaching Assistant'), ('Student', 'Student')], default='Student')
+    class_field = models.CharField(max_length=100, default='CSE 330')
 
 class QueueEntry(djongo_models.Model):
     name = djongo_models.CharField(max_length=100)

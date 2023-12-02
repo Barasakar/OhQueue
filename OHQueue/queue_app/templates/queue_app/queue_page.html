@@ -45,6 +45,12 @@
     <div class="queue-container">
         <!-- students who are queue will pop up here-->
     </div>
+    {% if is_ta %}
+    <button id="terminateSession" name="action">Terminate Session</button>
+    {% endif %}
+    <div id="terminationMessage" style="display: none; color: red; font-weight: bold;">
+        The current OH queue has been stopped.
+    </div>
     <a href="{% url 'login_page' %}" class="logout-button">Logout</a>
 
     <!-- Add JavaScript file here -->

@@ -118,6 +118,16 @@ class QueueConsumer(AsyncWebsocketConsumer):
         from .models import QueueEntry
         QueueEntry.objects.filter(username=student_username).update(assisting_ta=ta_username)
 
+    async def terminate_session(self):
+        await self.channel_layer.group_send(
+            self.queue_group_name,
+            {
+                'type': 'send_terminate_signal',
+                'message': {'action': 'session_terminated'}
+            }
+        )
+    async def send_terminate_signal(self, event):
+        await self.send(text_data=json.dumps(event['message']))
 
 
     async def send_current_state(self):
@@ -151,6 +161,9 @@ class QueueConsumer(AsyncWebsocketConsumer):
             student_username = text_data_json['studentUsername']
             await self.remove_queue_entry(student_username)
 
+        if action == 'terminate_session':
+            await self.terminate_session()
+            
         queue_entries = await self.get_all_queue_entries()
         await self.channel_layer.group_send(
             self.queue_group_name,

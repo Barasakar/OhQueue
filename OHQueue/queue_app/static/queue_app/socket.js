@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var ws = new WebSocket('ws://' + window.location.host + '/ws/queue/');
     var joinButton = document.querySelector('.join-queue-container button[value="join"]');
     var leaveButton = document.getElementById('leaveQueue');
+    const terminateButton = document.getElementById('terminateSession');
 
     ws.onopen = function(e) {
         console.log('WebSocket connected');
@@ -36,6 +37,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (data.action === 'answer') {
             displayAssistance(data.studentUsername, data.taUsername);
+        }
+        var data = JSON.parse(e.data);
+        if (data.action === 'session_terminated' && !isTA) {
+            document.querySelectorAll('input, button').forEach(function(el) {
+                el.disabled = true;
+                el.style.backgroundColor = 'grey';
+                el.style.cursor = 'not-allowed';
+            });
+            var terminationMessage = document.getElementById('terminationMessage');
+            if (terminationMessage) {
+                terminationMessage.style.display = 'block';
+            }
         }
     };
 
@@ -107,6 +120,11 @@ document.addEventListener('DOMContentLoaded', function() {
     //     });
     // }
 
+    if (terminateButton) {
+        terminateButton.addEventListener('click', function() {
+            ws.send(JSON.stringify({ action: 'terminate_session' }));
+        });
+    }
     function updateQueue(queue, currentUser) {
         var queueContainer = document.querySelector('.queue-container');
         queueContainer.innerHTML = '';
