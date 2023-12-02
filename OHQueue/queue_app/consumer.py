@@ -122,6 +122,7 @@ class QueueConsumer(AsyncWebsocketConsumer):
 
     async def send_current_state(self):
         queue_entries = await self.get_all_queue_entries()
+        await self.update_ta_list()
         await self.send(text_data=json.dumps({
             'action': 'initial_state',
             'tas': list(self.online_tas),
