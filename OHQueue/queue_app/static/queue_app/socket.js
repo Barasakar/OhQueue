@@ -138,6 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     var assistanceInfo = document.createElement('div');
                     assistanceInfo.className = 'queue-entry';
                     assistanceInfo.textContent = 'You are currently assisted by ' + queueItem.assisting_ta;
+                    assistanceInfo.style.color =  'red';
                     queueEntryDiv.appendChild(assistanceInfo);
                 }
     
