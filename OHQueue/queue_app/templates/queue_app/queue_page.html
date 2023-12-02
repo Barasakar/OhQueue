@@ -6,8 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Queue</title>
-    {% load static %}
+    
     <!-- CSS file links here -->
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'queue_app/signup_page.css' %}">
 </head>
 <body>
     <!-- Page content here -->
@@ -34,7 +36,6 @@
         </form>
         <button id="leaveQueue" name="action" value="leave">Leave Queue</button>
         <script>
-            // Embed the username in a JavaScript variable
             const username = "{{ username }}";
             const isTA = "{{ is_ta }}".toLowerCase() === 'true';
         </script>
