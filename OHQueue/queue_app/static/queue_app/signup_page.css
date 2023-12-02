@@ -8,7 +8,7 @@ body {
     margin: 0;
 }
 
-.login-container {
+.signup-container {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
@@ -16,7 +16,7 @@ body {
     width: 300px;
 }
 
-.login-container h1 {
+.signup-container h1 {
     text-align: center;
     color: rgb(165, 20, 23); 
 }
@@ -32,7 +32,7 @@ body {
 }
 
 .user-credentials input {
-    width: 100%;
+    width: 90%;
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 5px;
@@ -59,16 +59,16 @@ p {
     text-align: center;
 }
 
-.signup {
+.login {
     text-align: center;
     margin-top: 10px;
 }
 
-.signup a {
+.login a {
     color: rgb(0, 115, 96);
     text-decoration: none;
 }
 
-.signup a:hover {
+.login a:hover {
     text-decoration: underline;
 }
