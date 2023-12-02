@@ -1,0 +1,127 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: rgb(200, 200, 200);
+    padding: 20px;
+}
+
+
+.TA-list {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.TA-list p {
+    color: rgb(108, 115, 115); 
+    margin: 5px 0;
+}
+
+
+.join-queue-container {
+    margin-bottom: 20px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.join-queue-container label {
+    display: block;
+    margin-bottom: 5px;
+    color: rgb(108, 115, 115);
+}
+
+.join-queue-container input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid rgb(108, 115, 115); 
+}
+
+.join-queue-container button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: rgb(0, 115, 96); 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.join-queue-container button:hover {
+    background-color: darken(rgb(0, 115, 96), 10%); 
+}
+
+
+.queue-container {
+    margin-bottom: 20px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+/* .queue-container button {
+    margin-top: 5px;
+    background-color: rgb(165, 20, 23); 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-right: 5px;
+}
+
+.queue-container button:hover {
+    background-color: darken(rgb(165, 20, 23), 10%);
+} */
+
+.logout-button {
+    display: block;
+    width: 100px;
+    margin: 0 auto;
+    padding: 10px;
+    background-color: rgb(108, 115, 115);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.logout-button:hover {
+    background-color: darken(rgb(108, 115, 115), 10%);
+}
+
+.queue-entries {
+    background-color: rgb(255, 255, 255); 
+    border: 1px solid rgb(200, 200, 200); 
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+}
+
+.queue-entry {
+    color: rgb(108, 115, 115); 
+    margin-bottom: 5px; 
+}
+
+.queue-entries button {
+    background-color: rgb(165, 20, 23); 
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-top: 5px; 
+    margin-right: 5px;
+}
+
+.queue-entries button:hover {
+    background-color: darken(rgb(0, 115, 96), 10%);
+}

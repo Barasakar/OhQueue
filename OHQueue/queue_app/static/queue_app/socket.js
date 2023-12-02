@@ -74,38 +74,92 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // function updateQueue(queue, currentUser) {
+    //     var queueContainer = document.querySelector('.queue-container');
+    //     queueContainer.innerHTML = '';
+        
+    //     queue.forEach(function(queueItem) {
+    //         if (queueItem.in_queue) {
+    //             var newDiv = document.createElement('div');
+    //             newDiv.id = 'queue-user-' + queueItem.name;
+    //             newDiv.innerHTML = 'Name: ' + queueItem.name + ', Question: ' + queueItem.question + ', Location: ' + queueItem.location;
+
+    //             if (queueItem.assisting_ta) {
+    //                 var assistanceInfo = document.createElement('p');
+    //                 assistanceInfo.textContent = 'You are currently assisted by ' + queueItem.assisting_ta;
+    //                 newDiv.appendChild(assistanceInfo);
+    //             }
+    //             if (isTA) {  // Don't show the button if already assisted
+    //                 if (!queueItem.assisting_ta) {
+    //                     var answerButton = document.createElement('button');
+    //                     answerButton.textContent = 'Answer';
+    //                     answerButton.onclick = function() { answerQueueItem(queueItem.username); };
+    //                     newDiv.appendChild(answerButton);
+    //                 }
+    //                 var deleteButton = document.createElement('button');
+    //                 deleteButton.textContent = 'Delete';
+    //                 deleteButton.onclick = function() { deleteQueueItem(queueItem.username); };
+    //                 newDiv.appendChild(deleteButton);
+    //             }
+        
+    //             queueContainer.appendChild(newDiv);
+    //         }
+    //     });
+    // }
+
     function updateQueue(queue, currentUser) {
         var queueContainer = document.querySelector('.queue-container');
         queueContainer.innerHTML = '';
-        
+    
         queue.forEach(function(queueItem) {
             if (queueItem.in_queue) {
-                var newDiv = document.createElement('div');
-                newDiv.id = 'queue-user-' + queueItem.name;
-                newDiv.innerHTML = 'Name: ' + queueItem.name + ', Question: ' + queueItem.question + ', Location: ' + queueItem.location;
-
+                // Create a div for each queue entry with class 'queue-entries'
+                var queueEntryDiv = document.createElement('div');
+                queueEntryDiv.className = 'queue-entries';
+    
+                // Create a div for individual details with class 'queue-entry'
+                var nameDiv = document.createElement('div');
+                nameDiv.className = 'queue-entry';
+                nameDiv.textContent = 'Name: ' + queueItem.name;
+                queueEntryDiv.appendChild(nameDiv);
+    
+                var questionDiv = document.createElement('div');
+                questionDiv.className = 'queue-entry';
+                questionDiv.textContent = 'Question: ' + queueItem.question;
+                queueEntryDiv.appendChild(questionDiv);
+    
+                var locationDiv = document.createElement('div');
+                locationDiv.className = 'queue-entry';
+                locationDiv.textContent = 'Location: ' + queueItem.location;
+                queueEntryDiv.appendChild(locationDiv);
+    
+                // Assisting TA information
                 if (queueItem.assisting_ta) {
-                    var assistanceInfo = document.createElement('p');
+                    var assistanceInfo = document.createElement('div');
+                    assistanceInfo.className = 'queue-entry';
                     assistanceInfo.textContent = 'You are currently assisted by ' + queueItem.assisting_ta;
-                    newDiv.appendChild(assistanceInfo);
+                    queueEntryDiv.appendChild(assistanceInfo);
                 }
-                if (isTA) {  // Don't show the button if already assisted
+    
+                // TA actions
+                if (isTA) {
                     if (!queueItem.assisting_ta) {
                         var answerButton = document.createElement('button');
                         answerButton.textContent = 'Answer';
                         answerButton.onclick = function() { answerQueueItem(queueItem.username); };
-                        newDiv.appendChild(answerButton);
+                        queueEntryDiv.appendChild(answerButton);
                     }
                     var deleteButton = document.createElement('button');
                     deleteButton.textContent = 'Delete';
                     deleteButton.onclick = function() { deleteQueueItem(queueItem.username); };
-                    newDiv.appendChild(deleteButton);
+                    queueEntryDiv.appendChild(deleteButton);
                 }
-        
-                queueContainer.appendChild(newDiv);
+    
+                queueContainer.appendChild(queueEntryDiv);
             }
         });
     }
+    
     
 
     function answerQueueItem(username) {
